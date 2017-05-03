@@ -3,20 +3,9 @@
     "description": "Middle ware associated with Laravel Doctrine ACL. This middle ware will check permissions for access to routes, based on the route name and the reqest type.",
     "require": {
         "php": ">=7.0.0",
-        "laravel/framework": "5.3.*",
-        "laravel-doctrine/orm": "1.2.*",
-        "dingo/api": "1.0.x@dev",
-        "tymon/jwt-auth": "0.5.*",
-        "laravel-doctrine/extensions": "1.0.*",
-        "gedmo/doctrine-extensions": "^2.4",
-        "beberlei/DoctrineExtensions": "^1.0",
-        "laravel-doctrine/migrations": "1.0.*",
-        "laravel-doctrine/acl": "1.0.*"
+        "laravel/framework": "5.3.*"
     },
     "require-dev": {
-        "fzaninotto/faker": "~1.4",
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~4.0",
         "symfony/css-selector": "2.8.*|3.0.*",
         "symfony/dom-crawler": "2.8.*|3.0.*"
     },
