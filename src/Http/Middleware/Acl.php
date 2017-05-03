@@ -26,7 +26,10 @@ class Acl
      */
     public function handle($request, Closure $next)
     {
-        $user = $request->user();
+        //$user = $request->user();
+        $controller = $request->route()->getController();
+        $user = $controller->getUser();
+        //getUser
         if ($user === NULL) {
             return response (static::ERRORS['notLoggedIn']['message'], static::ERRORS['notLoggedIn']['code']);
         }
@@ -34,12 +37,8 @@ class Acl
         $actions = $request->route()->getAction();
         $uri = $request->route()->getUri();
         $requestMethod = $request->getMethod();
-        $actionName = $request->route()->getActionName();
 
-        $currentAction = \Route::currentRouteAction();
-        list($controller, $method) = explode('@', $currentAction);
-        $controller = preg_replace('/.*\\\/', '', $controller);
-        $user->can();
+        $test = $user->hasPermissionTo(['shimy']);
         return $next($request);
     }
 }
