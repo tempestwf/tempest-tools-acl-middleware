@@ -64,20 +64,21 @@ trait HasPermissionsOptimized
             return false;
         }
 
-        // If requireAll is true we need to count the permissions that were found.
+        // If requireAll is true we need to count the permissions that were found. We need to find the unique permissions to count in case they came from both relations used.
         if ($requireAll === true) {
-            $matchedPermissionsCount = 0;
+            $matchedPermissions = [];
             if (array_key_exists('Permissions', $results)) {
-                $matchedPermissionsCount += count($results['Permissions']);
+                array_merge($matchedPermissions, $results['Permissions']);
             }
             if (array_key_exists('Roles', $results)) {
                 foreach ($results['Roles'] as $key => $value) {
                     if (array_key_exists('Permissions', $value)) {
-                        $matchedPermissionsCount += count($value['Permissions']);
+                        array_merge($matchedPermissions, $value['Permissions']);
                     }
                 }
             }
-            return $matchedPermissionsCount === count($names);
+            $matchedPermissions = array_unique ($matchedPermissions);
+            return count($matchedPermissions) === count($names);
         }
 
         return true;
