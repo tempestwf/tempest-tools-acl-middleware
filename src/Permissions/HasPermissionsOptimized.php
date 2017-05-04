@@ -33,6 +33,7 @@ trait HasPermissionsOptimized
     protected $permissionRelationsName = 'permissions';
 
     /**
+     * A method that checks if the current entity the trait is applied to has permissions that match the names passed
      * @param  array $names
      * @param  bool $requireAll
      * @return bool
@@ -50,8 +51,9 @@ trait HasPermissionsOptimized
         }
 
         // If permissions were passed we need to get there names to run our query
-        foreach ($names as $key => &$value) {
-            $value = $this->getPermissionName($value);
+        $namesFiltered = [];
+        foreach ($names as $key => $value) {
+            $namesFiltered[] = $this->getPermissionName($value);
         }
 
         // We use a query to check if the user has the permissions that are passed rather than using the getRoles and getPermissions methods used previously.
@@ -67,14 +69,14 @@ trait HasPermissionsOptimized
         // If we have the HasPermissionsContract then we know that permissions can be assigned by a Permissions relation
         if ($this instanceof HasPermissionsContract) {
             $qb->leftJoin('e.' . $this->getPermissionRelationsName(), 'p');
-            $wheres[] = $qb->expr()->in('p.name', $names);
+            $wheres[] = $qb->expr()->in('p.name', $namesFiltered);
         }
 
         // If we have the HasRolesHasRoles then we know that permissions can be assigned by a Roles relation
         if ($this instanceof HasRolesHasRoles) {
             $qb->leftJoin('e.' . $this->getRoleRelationsName(), 'r');
             $qb->leftJoin('e.' . $this->getPermissionRelationsName(), 'p2');
-            $wheres[] = $qb->expr()->in('p2.name', $names);
+            $wheres[] = $qb->expr()->in('p2.name', $namesFiltered);
         }
         // Add the wheres for either roles or permissions or both depending which contracts were present.
 
@@ -103,7 +105,7 @@ trait HasPermissionsOptimized
                 }
             }
             $matchedPermissions = array_unique ($matchedPermissions);
-            return count($matchedPermissions) === count($names);
+            return count($matchedPermissions) === count($namesFiltered);
         }
 
         return true;
