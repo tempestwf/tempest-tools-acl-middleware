@@ -39,7 +39,7 @@ trait HasPermissionsOptimized
      * @return bool
      * @throws \RuntimeException
      */
-    public function hasPermissionTo(array $names, boolean $requireAll = false) : boolean
+    public function hasPermissionTo($names, $requireAll = false) : bool
     {
         // If you can't get the id from the entity then this trait is not compatible with the class
         if (!method_exists ($this, 'getId')) {
@@ -63,7 +63,9 @@ trait HasPermissionsOptimized
         $qb = $em->createQueryBuilder();
         $qb->select(['e.id'])
             ->from(static::class, 'e')
-            ->where('e.id', $this->getId());
+            ->where(
+                $qb->expr()->eq('e.id', $this->getId())
+            );
 
         $wheres = [];
         // If we have the HasPermissionsContract then we know that permissions can be assigned by a Permissions relation
@@ -79,10 +81,11 @@ trait HasPermissionsOptimized
             $wheres[] = $qb->expr()->in('p2.name', $namesFiltered);
         }
         // Add the wheres for either roles or permissions or both depending which contracts were present.
-
+        $orX = call_user_func_array([$qb->expr(), 'orX'], $wheres);
         $qb->andWhere(
-            $qb->expr()->orX($wheres)
+            $orX
         );
+
         /** @var array[] $results */
         $results = $qb->getQuery()->getArrayResult();
 
