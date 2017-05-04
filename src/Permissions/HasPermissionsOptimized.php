@@ -2,6 +2,7 @@
 
 namespace TempestTools\AclMiddleware\Permissions;
 
+use App\Entities\Entity;
 use Doctrine\ORM\EntityManager;
 use LaravelDoctrine\ACL\Contracts\HasPermissions as HasPermissionsContract;
 use LaravelDoctrine\ACL\Contracts\HasRoles as HasRolesHasRoles;
@@ -14,7 +15,22 @@ trait HasPermissionsOptimized
     /**
      * @var string
      */
-    protected $needsGetIdError = 'Error: HasPermissionsOptimized must be applied to a entity that implements a getId method';
+    protected $needsGetIdError = 'Error: HasPermissionsOptimized trait must be applied to a entity that implements a getId method';
+
+    /**
+     * @var string
+     */
+    protected $needsEntityBaseClass = 'Error: class must extend App\Entities\Entity to use the HasPermissionsOptimized trait';
+
+    /**
+     * @var string
+     */
+    protected $roleRelationsName = 'roles';
+
+    /**
+     * @var string
+     */
+    protected $permissionRelationsName = 'permissions';
 
     /**
      * @param  array $names
@@ -27,6 +43,10 @@ trait HasPermissionsOptimized
         // If you can't get the id from the entity then this trait is not compatible with the class
         if (!method_exists ($this, 'getId')) {
             throw new RuntimeException($this->getNeedsGetIdError());
+        }
+
+        if (!is_subclass_of($this, Entity::class)) {
+            throw new RuntimeException($this->getNeedsEntityBaseClass());
         }
 
         // If permissions were passed we need to get there names to run our query
@@ -46,14 +66,14 @@ trait HasPermissionsOptimized
         $wheres = [];
         // If we have the HasPermissionsContract then we know that permissions can be assigned by a Permissions relation
         if ($this instanceof HasPermissionsContract) {
-            $qb->leftJoin('e.Permissions', 'p');
+            $qb->leftJoin('e.' . $this->getPermissionRelationsName(), 'p');
             $wheres[] = $qb->expr()->in('p.name', $names);
         }
 
         // If we have the HasRolesHasRoles then we know that permissions can be assigned by a Roles relation
         if ($this instanceof HasRolesHasRoles) {
-            $qb->leftJoin('e.Roles', 'r');
-            $qb->leftJoin('r.Permissions', 'p2');
+            $qb->leftJoin('e.' . $this->getRoleRelationsName(), 'r');
+            $qb->leftJoin('e.' . $this->getPermissionRelationsName(), 'p2');
             $wheres[] = $qb->expr()->in('p2.name', $names);
         }
         // Add the wheres for either roles or permissions or both depending which contracts were present.
@@ -105,5 +125,29 @@ trait HasPermissionsOptimized
     protected function getPermissionName($permission)
     {
         return $permission instanceof PermissionContract ? $permission->getName() : $permission;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNeedsEntityBaseClass(): string
+    {
+        return $this->needsEntityBaseClass;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoleRelationsName(): string
+    {
+        return $this->roleRelationsName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPermissionRelationsName(): string
+    {
+        return $this->permissionRelationsName;
     }
 }
