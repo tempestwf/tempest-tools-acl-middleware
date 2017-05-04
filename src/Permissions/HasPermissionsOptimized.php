@@ -17,7 +17,7 @@ trait HasPermissionsOptimized
     protected $needsGetIdError = 'Error: HasPermissionsOptimized must be applied to a entity that implements a getId method';
 
     /**
-     * @param  PermissionContract|string|array $names
+     * @param  array $names
      * @param  bool $requireAll
      * @return bool
      * @throws \RuntimeException
@@ -29,12 +29,17 @@ trait HasPermissionsOptimized
             throw new RuntimeException($this->getNeedsGetIdError());
         }
 
+        // If permissions were passed we need to get there names to run our query
+        foreach ($names as $key => &$value) {
+            $value = $this->getPermissionName($value);
+        }
+
         // We use a query to check if the user has the permissions that are passed rather than using the getRoles and getPermissions methods used previously.
         // This method will be much faster when there are many permissions assigned to the user/role.
         /** @var $em EntityManager */
         $em = \App::make(EntityManager::class);
         $qb = $em->createQueryBuilder();
-        $qb->select(['e'])
+        $qb->select(['e.id'])
             ->from(static::class, 'e')
             ->where('e.id', $this->getId());
 
@@ -42,14 +47,14 @@ trait HasPermissionsOptimized
         // If we have the HasPermissionsContract then we know that permissions can be assigned by a Permissions relation
         if ($this instanceof HasPermissionsContract) {
             $qb->leftJoin('e.Permissions', 'p');
-            $wheres[] = $qb->expr()->in('p', $names);
+            $wheres[] = $qb->expr()->in('p.name', $names);
         }
 
         // If we have the HasRolesHasRoles then we know that permissions can be assigned by a Roles relation
         if ($this instanceof HasRolesHasRoles) {
             $qb->leftJoin('e.Roles', 'r');
             $qb->leftJoin('r.Permissions', 'p2');
-            $wheres[] = $qb->expr()->in('p2', $names);
+            $wheres[] = $qb->expr()->in('p2.name', $names);
         }
         // Add the wheres for either roles or permissions or both depending which contracts were present.
 
