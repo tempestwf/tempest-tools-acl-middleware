@@ -2,7 +2,11 @@
 
 namespace TempestTools\AclMiddleware\Http\Middleware;
 
+use App\API\V3\Entities\User;
 use Closure;
+use Auth;
+use Illuminate\Http\Request;
+use LaravelDoctrine\ORM\Facades\EntityManager;
 
 class Acl
 {
@@ -20,14 +24,20 @@ class Acl
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
-        //$user = $request->user();
+        //EntityManager::
+        $em = app('em');
+        $em2 = \App::make(\Doctrine\ORM\EntityManager::class);
+        $qb1 = $em->createQueryBuilder();
+        $qb2 = $em2->createQueryBuilder();
+
         $controller = $request->route()->getController();
+        /** @var User $user */
         $user = $controller->getUser();
         //getUser
         if ($user === NULL) {
@@ -39,6 +49,8 @@ class Acl
         $requestMethod = $request->getMethod();
 
         $test = $user->hasPermissionTo(['shimy']);
+
+
         return $next($request);
     }
 }
