@@ -5,11 +5,12 @@ namespace TempestTools\AclMiddleware\Http\Middleware;
 use App\API\V3\Entities\User;
 use App\API\V3\Repositories\UserRepository;
 use Closure;
-use Doctrine\ORM\EntityManager;
 use Illuminate\Http\Request;
+use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 
 class Acl
 {
+    use MakeEmTrait;
     /**
      * @var array ERRORS
      * A constant that stores the errors that can be returned by the class
@@ -32,7 +33,7 @@ class Acl
      */
     public function handle(Request $request, Closure $next)
     {
-        $em = \App::make(EntityManager::class);
+        $em = $this->em();
 
         $controller = $request->route()->getController();
         /** @var User $user */

@@ -127,16 +127,16 @@ class HasPermissionsQueryHelper {
             '])
             ->where(
                 $qb->expr()->eq('e.id', $entity->getId())
-            );
+            )
+            ->andWhere($qb->expr()->in('p.name', $namesFiltered));
         if ($type===$this->getPermissionRelationsName()) {
             $qb->innerJoin('e.' . $this->getPermissionRelationsName(), 'p');
-            $qb->andWhere($qb->expr()->in('p.name', $namesFiltered));
         } else if ($type===$this->getRoleRelationsName()) {
             $qb->addSelect('partial r.{id}');
             $qb->innerJoin('e.' . $this->getRoleRelationsName(), 'r');
             $qb->innerJoin('r.' . $this->getPermissionRelationsName(), 'p');
-            $qb->andWhere($qb->expr()->in('p.name', $namesFiltered));
         }
+
         return $qb;
     }
 

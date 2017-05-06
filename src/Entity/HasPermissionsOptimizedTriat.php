@@ -5,10 +5,12 @@ namespace TempestTools\AclMiddleware\Entity;
 use App\Entities\Entity;
 use Doctrine\ORM\EntityManager;
 use TempestTools\AclMiddleware\Contracts\RepoHasPermissions;
+use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 
 
 trait HasPermissionsOptimizedTriat
 {
+    use MakeEmTrait;
     protected $hasPermissionsOptimizedTriatMustBeAppliedToEntity = 'Error: HasPermissionsOptimizedTriat must be applied to an entity';
     /**
      * A method that checks if the current entity the trait is applied to has permissions that match the names passed
@@ -25,7 +27,7 @@ trait HasPermissionsOptimizedTriat
             throw new \RuntimeException($this->getHasPermissionsOptimizedTriatMustBeAppliedToEntity());
         }
         /** @var EntityManager $em */
-        $em = \App::make(EntityManager::class);
+        $em = $this->em();
         $repo = $em->getRepository(get_class($this));
         return $this->hasPermissionToFromRepo($repo, $names, $requireAll);
     }
