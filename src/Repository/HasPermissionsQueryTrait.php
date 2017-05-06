@@ -1,8 +1,9 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Permissions;
+namespace TempestTools\AclMiddleware\Repository;
 
 use App\Entities\Entity;
+use TempestTools\AclMiddleware\Helper\HasPermissionsQueryHelper;
 
 
 trait HasPermissionsQueryTrait

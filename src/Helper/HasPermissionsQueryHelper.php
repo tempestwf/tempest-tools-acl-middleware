@@ -1,6 +1,6 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Permissions;
+namespace TempestTools\AclMiddleware\Helper;
 
 use App\Entities\Entity;
 use Doctrine\ORM\EntityRepository;
