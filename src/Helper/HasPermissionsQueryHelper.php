@@ -68,36 +68,42 @@ class HasPermissionsQueryHelper {
      */
     public function hasPermissionTo(Entity $entity, $names, $requireAll = false) : bool
     {
-        // Make sure that trait is compatible with class it is applied too
         $this->checkCompatibility($entity);
 
-        // Prepare the names array
         $namesFiltered = $this->prepareNamesArray($names);
 
-        $qb = $this->buildHasPermissionToQuery($entity, $namesFiltered);
-        /** @var array[] $results */
-        $results = $qb->getQuery()->getArrayResult();
+        $results = [];
+        // If we have the HasPermissionsContract then we know that permissions can be assigned by a Permissions relation
+        if ($entity instanceof HasPermissionsContract) {
+            $qb = $this->buildHasPermissionToQuery($entity, $namesFiltered, $this->getPermissionRelationsName());
+            /** @var array[] $results */
+            $permissionsResults = $qb->getQuery()->getScalarResult();
+            foreach($permissionsResults as $result) {
+                $results[] = $result['p_id'];
+            }
+        }
+
+        // If we have the HasRolesHasRoles then we know that permissions can be assigned by a Roles relation
+        if ($entity instanceof HasRolesHasRoles) {
+            $qb = $this->buildHasPermissionToQuery($entity, $namesFiltered, $this->getRoleRelationsName());
+            /** @var array[] $results */
+            $rolesResults = $qb->getQuery()->getScalarResult();
+            foreach($rolesResults as $result) {
+                $results[] = $result['p_id'];
+            }
+        }
+
+
 
         // If no users were found then permissions did not match.
         if (count($results) === 0) {
             return false;
         }
 
-        // If requireAll is true we need to count the permissions that were found. We need to find the unique permissions to count in case they came from both relations used.
+        // If requireAll is true we need to count the unique permissions that were found.
         if ($requireAll === true) {
-            $matchedPermissions = [];
-            if (array_key_exists('Permissions', $results)) {
-                array_merge($matchedPermissions, $results['Permissions']);
-            }
-            if (array_key_exists('Roles', $results)) {
-                foreach ($results['Roles'] as $key => $value) {
-                    if (array_key_exists('Permissions', $value)) {
-                        array_merge($matchedPermissions, $value['Permissions']);
-                    }
-                }
-            }
-            $matchedPermissions = array_unique ($matchedPermissions);
-            return count($matchedPermissions) === count($namesFiltered);
+            $results = array_unique ($results);
+            return count($results) === count($namesFiltered);
         }
 
         return true;
@@ -110,39 +116,27 @@ class HasPermissionsQueryHelper {
      * @param array $namesFiltered
      * @return QueryBuilder
      */
-    protected function buildHasPermissionToQuery(Entity $entity, array $namesFiltered): QueryBuilder
+    protected function buildHasPermissionToQuery(Entity $entity, array $namesFiltered, $type): QueryBuilder
     {
         // We use a query to check if the user has the permissions that are passed rather than using the getRoles and getPermissions methods used previously.
         // This method will be much faster when there are many permissions assigned to the user/role.
         $qb = $this->getRepository()->createQueryBuilder('e');
         $qb->select(['
-                partial e.{id},
-                partial r.{id}, 
-                partial p.{id},
-                partial p2.{id}
+                partial e.{id}, 
+                partial p.{id}
             '])
             ->where(
                 $qb->expr()->eq('e.id', $entity->getId())
             );
-
-        $wheres = [];
-        // If we have the HasPermissionsContract then we know that permissions can be assigned by a Permissions relation
-        if ($entity instanceof HasPermissionsContract) {
-            $qb->leftJoin('e.' . $this->getPermissionRelationsName(), 'p');
-            $wheres[] = $qb->expr()->in('p.name', $namesFiltered);
+        if ($type===$this->getPermissionRelationsName()) {
+            $qb->innerJoin('e.' . $this->getPermissionRelationsName(), 'p');
+            $qb->andWhere($qb->expr()->in('p.name', $namesFiltered));
+        } else if ($type===$this->getRoleRelationsName()) {
+            $qb->addSelect('partial r.{id}');
+            $qb->innerJoin('e.' . $this->getRoleRelationsName(), 'r');
+            $qb->innerJoin('r.' . $this->getPermissionRelationsName(), 'p');
+            $qb->andWhere($qb->expr()->in('p.name', $namesFiltered));
         }
-
-        // If we have the HasRolesHasRoles then we know that permissions can be assigned by a Roles relation
-        if ($entity instanceof HasRolesHasRoles) {
-            $qb->leftJoin('e.' . $this->getRoleRelationsName(), 'r');
-            $qb->leftJoin('r.' . $this->getPermissionRelationsName(), 'p2');
-            $wheres[] = $qb->expr()->in('p2.name', $namesFiltered);
-        }
-        // Add the wheres for either roles or permissions or both depending which contracts were present.
-        $orX = call_user_func_array([$qb->expr(), 'orX'], $wheres);
-        $qb->andWhere(
-            $orX
-        );
         return $qb;
     }
 

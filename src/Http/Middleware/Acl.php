@@ -49,8 +49,8 @@ class Acl
         //$test = $user->hasPermissionTo(['shimy']);
         /** @var UserRepository $repo */
         $repo = $em->getRepository(get_class($user));
-        $result1 = $repo->hasPermissionTo($user, ['auth/me:GET']);
-        $result2 = $user->hasPermissionTo(['auth/me:GET']);
+        $result1 = $repo->hasPermissionTo($user, ['auth/me:GET', 'auth/authenticate:POST', 'shimy'], false);
+        //$result2 = $user->hasPermissionTo(['auth/me:GET']);
 
         return $next($request);
     }
