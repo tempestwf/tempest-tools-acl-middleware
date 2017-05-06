@@ -5,6 +5,7 @@ namespace TempestTools\AclMiddleware\Http\Middleware;
 use App\API\V3\Entities\User;
 use App\API\V3\Repositories\UserRepository;
 use Closure;
+use Doctrine\ORM\EntityManager;
 use Illuminate\Http\Request;
 
 class Acl
@@ -31,7 +32,7 @@ class Acl
      */
     public function handle(Request $request, Closure $next)
     {
-        $em = \App::make(\Doctrine\ORM\EntityManager::class);
+        $em = \App::make(EntityManager::class);
 
         $controller = $request->route()->getController();
         /** @var User $user */
@@ -48,7 +49,9 @@ class Acl
         //$test = $user->hasPermissionTo(['shimy']);
         /** @var UserRepository $repo */
         $repo = $em->getRepository(get_class($user));
-        $repo->hasPermissionTo($user, ['shimy']);
+        $result1 = $repo->hasPermissionTo($user, ['auth/me:GET']);
+        $result2 = $user->hasPermissionTo(['auth/me:GET']);
+
         return $next($request);
     }
 }

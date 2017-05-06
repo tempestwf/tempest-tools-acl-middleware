@@ -75,7 +75,6 @@ class HasPermissionsQueryHelper {
         $namesFiltered = $this->prepareNamesArray($names);
 
         $qb = $this->buildHasPermissionToQuery($entity, $namesFiltered);
-
         /** @var array[] $results */
         $results = $qb->getQuery()->getArrayResult();
 
@@ -116,22 +115,27 @@ class HasPermissionsQueryHelper {
         // We use a query to check if the user has the permissions that are passed rather than using the getRoles and getPermissions methods used previously.
         // This method will be much faster when there are many permissions assigned to the user/role.
         $qb = $this->getRepository()->createQueryBuilder('e');
-        $qb->select(['e.id'])
+        $qb->select(['
+                partial e.{id},
+                partial r.{id}, 
+                partial p.{id},
+                partial p2.{id}
+            '])
             ->where(
                 $qb->expr()->eq('e.id', $entity->getId())
             );
 
         $wheres = [];
         // If we have the HasPermissionsContract then we know that permissions can be assigned by a Permissions relation
-        if ($this instanceof HasPermissionsContract) {
+        if ($entity instanceof HasPermissionsContract) {
             $qb->leftJoin('e.' . $this->getPermissionRelationsName(), 'p');
             $wheres[] = $qb->expr()->in('p.name', $namesFiltered);
         }
 
         // If we have the HasRolesHasRoles then we know that permissions can be assigned by a Roles relation
-        if ($this instanceof HasRolesHasRoles) {
+        if ($entity instanceof HasRolesHasRoles) {
             $qb->leftJoin('e.' . $this->getRoleRelationsName(), 'r');
-            $qb->leftJoin('e.' . $this->getPermissionRelationsName(), 'p2');
+            $qb->leftJoin('r.' . $this->getPermissionRelationsName(), 'p2');
             $wheres[] = $qb->expr()->in('p2.name', $namesFiltered);
         }
         // Add the wheres for either roles or permissions or both depending which contracts were present.
