@@ -3,10 +3,9 @@
 namespace TempestTools\AclMiddleware\Http\Middleware;
 
 use App\API\V3\Entities\User;
+use App\API\V3\Repositories\UserRepository;
 use Closure;
-use Auth;
 use Illuminate\Http\Request;
-use LaravelDoctrine\ORM\Facades\EntityManager;
 
 class Acl
 {
@@ -21,25 +20,23 @@ class Acl
                 'code'=> 401
             ]
     ];
+
     /**
      * Handle an incoming request.
      *
-     * @param  Request  $request
-     * @param  \Closure  $next
+     * @param  Request $request
+     * @param  \Closure $next
      * @return mixed
+     * @throws \RuntimeException
      */
     public function handle(Request $request, Closure $next)
     {
-        //EntityManager::
-        $em = app('em');
-        $em2 = \App::make(\Doctrine\ORM\EntityManager::class);
-        $qb1 = $em->createQueryBuilder();
-        $qb2 = $em2->createQueryBuilder();
+        $em = \App::make(\Doctrine\ORM\EntityManager::class);
 
         $controller = $request->route()->getController();
         /** @var User $user */
         $user = $controller->getUser();
-        //getUser
+
         if ($user === NULL) {
             return response (static::ERRORS['notLoggedIn']['message'], static::ERRORS['notLoggedIn']['code']);
         }
@@ -48,9 +45,10 @@ class Acl
         $uri = $request->route()->getUri();
         $requestMethod = $request->getMethod();
 
-        $test = $user->hasPermissionTo(['shimy']);
-
-
+        //$test = $user->hasPermissionTo(['shimy']);
+        /** @var UserRepository $repo */
+        $repo = $em->getRepository(get_class($user));
+        $repo->hasPermissionTo($user, ['shimy']);
         return $next($request);
     }
 }

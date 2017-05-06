@@ -3,30 +3,35 @@
 namespace TempestTools\AclMiddleware\Permissions;
 
 use App\Entities\Entity;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use LaravelDoctrine\ACL\Contracts\HasPermissions as HasPermissionsContract;
 use LaravelDoctrine\ACL\Contracts\HasRoles as HasRolesHasRoles;
 use LaravelDoctrine\ACL\Contracts\Permission as PermissionContract;
 use RuntimeException;
+use TempestTools\Common\Utility\ErrorConstantsTrait;
 
-trait HasPermissionsOptimized
-{
-
+class HasPermissionsQueryHelper {
+    use ErrorConstantsTrait;
     /**
-     * @var string
+     * @var array ERRORS
+     * A constant that stores the errors that can be returned by the class
      */
-    protected $needsGetIdError = 'Error: HasPermissionsOptimized trait must be applied to a entity that implements a getId method';
+    const ERRORS = [
+        'needsGetIdError'=>
+            [
+                'message'=>'Error: HasPermissionsQueryTrait trait must be used on an entity with a getId method.'
+            ],
+        'needsPermissionContract'=>
+            [
+                'message'=>'Error: entity must implement either: HasPermissionsContract or HasRolesHasRoles to use the HasPermissionsQueryTrait trait'
+            ],
+        'entityMustMatchRepo'=>
+            [
+                'message'=>'Error: entity must match the repo it was passed to to use the HasPermissionsQueryHelper'
+            ]
+    ];
 
-    /**
-     * @var string
-     */
-    protected $needsEntityBaseClassError = 'Error: class must extend App\Entities\Entity to use the HasPermissionsOptimized trait';
-
-    /**
-     * @var string
-     */
-    protected $noEmError = 'Error: An entity manager must be set on the entity before using the HasPermissionsOptimized traits functionality';
 
     /**
      * @var string
@@ -37,29 +42,39 @@ trait HasPermissionsOptimized
      * @var string
      */
     protected $permissionRelationsName = 'permissions';
+    /**
+     * @var EntityRepository
+     */
+    protected $repository;
 
     /**
-     * @var EntityManager|null
+     * HasPermissionsQueryHelper constructor.
+     *
+     * @param EntityRepository $repository
      */
-    protected $em;
+    public function __construct(EntityRepository $repository) {
+        $this->setRepository($repository);
+    }
+
 
     /**
      * A method that checks if the current entity the trait is applied to has permissions that match the names passed
+     *
+     * @param Entity $entity
      * @param  array $names
      * @param  bool $requireAll
      * @return bool
      * @throws \RuntimeException
      */
-    public function hasPermissionTo($names, $requireAll = false) : bool
+    public function hasPermissionTo(Entity $entity, $names, $requireAll = false) : bool
     {
         // Make sure that trait is compatible with class it is applied too
-        $this->checkCompatibility();
+        $this->checkCompatibility($entity);
 
         // Prepare the names array
         $namesFiltered = $this->prepareNamesArray($names);
 
-
-        $qb = $this->buildQuery($namesFiltered);
+        $qb = $this->buildHasPermissionToQuery($entity, $namesFiltered);
 
         /** @var array[] $results */
         $results = $qb->getQuery()->getArrayResult();
@@ -91,20 +106,19 @@ trait HasPermissionsOptimized
 
     /**
      * Builds the query builder query used to test permissions.
+     *
+     * @param Entity $entity
      * @param array $namesFiltered
      * @return QueryBuilder
      */
-    protected function buildQuery(array $namesFiltered): QueryBuilder
+    protected function buildHasPermissionToQuery(Entity $entity, array $namesFiltered): QueryBuilder
     {
         // We use a query to check if the user has the permissions that are passed rather than using the getRoles and getPermissions methods used previously.
         // This method will be much faster when there are many permissions assigned to the user/role.
-        /** @var $em EntityManager */
-        $em = $this->getEm();
-        $qb = $em->createQueryBuilder();
+        $qb = $this->getRepository()->createQueryBuilder('e');
         $qb->select(['e.id'])
-            ->from(static::class, 'e')
             ->where(
-                $qb->expr()->eq('e.id', $this->getId())
+                $qb->expr()->eq('e.id', $entity->getId())
             );
 
         $wheres = [];
@@ -147,29 +161,23 @@ trait HasPermissionsOptimized
     /**
      * Checks that the trait is compatible the class it is applied too
      *
+     * @param Entity $entity
      * @throws \RuntimeException
      */
-    protected function checkCompatibility() {
+    protected function checkCompatibility(Entity $entity) {
         // If you can't get the id from the entity then this trait is not compatible with the class
-        if (!method_exists ($this, 'getId')) {
-            throw new RuntimeException($this->getNeedsGetIdError());
+        if (!method_exists ($entity, 'getId')) {
+            throw new RuntimeException($this->getErrorFromConstant('needsGetIdError')['message']);
         }
 
-        if (!is_subclass_of($this, Entity::class)) {
-            throw new RuntimeException($this->getNeedsEntityBaseClassError());
+        if (!$entity instanceof HasPermissionsContract && !$entity instanceof HasRolesHasRoles) {
+            throw new RuntimeException($this->getErrorFromConstant('needsPermissionContract')['message']);
         }
 
-        if ($this->getEm() === null) {
-
+        if (get_class($entity) !== $this->getRepository()->getClassName()) {
+            throw new RuntimeException($this->getErrorFromConstant('entityMustMatchRepo')['message']);
         }
-    }
 
-    /**
-     * @return string
-     */
-    public function getNeedsGetIdError(): string
-    {
-        return $this->needsGetIdError;
     }
 
     /**
@@ -180,14 +188,6 @@ trait HasPermissionsOptimized
     protected function getPermissionName($permission): string
     {
         return $permission instanceof PermissionContract ? $permission->getName() : $permission;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNeedsEntityBaseClassError(): string
-    {
-        return $this->needsEntityBaseClassError;
     }
 
     /**
@@ -206,21 +206,43 @@ trait HasPermissionsOptimized
         return $this->permissionRelationsName;
     }
 
+
     /**
-     * @param EntityManager $em
-     * @return HasPermissionsOptimized
+     * @param string $roleRelationsName
+     * @return HasPermissionsQueryHelper
      */
-    public function setEm(EntityManager $em): HasPermissionsOptimized
+    public function setRoleRelationsName(string $roleRelationsName): HasPermissionsQueryHelper
     {
-        $this->em = $em;
+        $this->roleRelationsName = $roleRelationsName;
         return $this;
     }
 
     /**
-     * @return EntityManager
+     * @param string $permissionRelationsName
+     * @return HasPermissionsQueryHelper
      */
-    public function getEm(): EntityManager
+    public function setPermissionRelationsName(string $permissionRelationsName): HasPermissionsQueryHelper
     {
-        return $this->em;
+        $this->permissionRelationsName = $permissionRelationsName;
+        return $this;
     }
+
+    /**
+     * @param EntityRepository $repository
+     * @return HasPermissionsQueryHelper
+     */
+    public function setRepository(EntityRepository $repository): HasPermissionsQueryHelper
+    {
+        $this->repository = $repository;
+        return $this;
+    }
+
+    /**
+     * @return EntityRepository
+     */
+    public function getRepository(): EntityRepository
+    {
+        return $this->repository;
+    }
+
 }
