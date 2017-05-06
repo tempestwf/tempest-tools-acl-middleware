@@ -114,6 +114,7 @@ class HasPermissionsQueryHelper {
      *
      * @param Entity $entity
      * @param array $namesFiltered
+     * @param $type
      * @return QueryBuilder
      */
     protected function buildHasPermissionToQuery(Entity $entity, array $namesFiltered, $type): QueryBuilder

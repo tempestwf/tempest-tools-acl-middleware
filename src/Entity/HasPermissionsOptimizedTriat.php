@@ -28,6 +28,7 @@ trait HasPermissionsOptimizedTriat
         }
         /** @var EntityManager $em */
         $em = $this->em();
+        /** @var RepoHasPermissions $repo */
         $repo = $em->getRepository(get_class($this));
         return $this->hasPermissionToFromRepo($repo, $names, $requireAll);
     }
