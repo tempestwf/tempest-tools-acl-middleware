@@ -8,7 +8,7 @@ use TempestTools\AclMiddleware\Contracts\RepoHasPermissions;
 use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 
 
-trait HasPermissionsOptimizedTriat
+trait HasPermissionsOptimizedTrait
 {
     use MakeEmTrait;
     protected $hasPermissionsOptimizedTriatMustBeAppliedToEntity = 'Error: HasPermissionsOptimizedTriat must be applied to an entity';

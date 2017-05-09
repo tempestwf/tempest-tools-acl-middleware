@@ -9,6 +9,7 @@ use LaravelDoctrine\ACL\Contracts\HasPermissions as HasPermissionsContract;
 use LaravelDoctrine\ACL\Contracts\HasRoles as HasRolesHasRoles;
 use LaravelDoctrine\ACL\Contracts\Permission as PermissionContract;
 use RuntimeException;
+use TempestTools\AclMiddleware\Contracts\HasId;
 use TempestTools\Common\Utility\ErrorConstantsTrait;
 
 class HasPermissionsQueryHelper {
@@ -60,13 +61,13 @@ class HasPermissionsQueryHelper {
     /**
      * A method that checks if the current entity the trait is applied to has permissions that match the names passed
      *
-     * @param Entity $entity
+     * @param HasId $entity
      * @param  array $names
      * @param  bool $requireAll
      * @return bool
      * @throws \RuntimeException
      */
-    public function hasPermissionTo(Entity $entity, $names, $requireAll = false) : bool
+    public function hasPermissionTo(HasId $entity, $names, $requireAll = false) : bool
     {
         $this->checkCompatibility($entity);
 
@@ -75,7 +76,7 @@ class HasPermissionsQueryHelper {
         $results = [];
         // If we have the HasPermissionsContract then we know that permissions can be assigned by a Permissions relation
         if ($entity instanceof HasPermissionsContract) {
-            $qb = $this->buildHasPermissionToQuery($entity, $namesFiltered, $this->getPermissionRelationsName());
+            $qb = $this->buildHasPermissionToQueryPermissions($entity, $namesFiltered);
             /** @var array[] $results */
             $permissionsResults = $qb->getQuery()->getScalarResult();
             foreach($permissionsResults as $result) {
@@ -85,7 +86,7 @@ class HasPermissionsQueryHelper {
 
         // If we have the HasRolesHasRoles then we know that permissions can be assigned by a Roles relation
         if ($entity instanceof HasRolesHasRoles) {
-            $qb = $this->buildHasPermissionToQuery($entity, $namesFiltered, $this->getRoleRelationsName());
+            $qb = $this->buildHasPermissionToQueryRoles($entity, $namesFiltered);
             /** @var array[] $results */
             $rolesResults = $qb->getQuery()->getScalarResult();
             foreach($rolesResults as $result) {
@@ -112,12 +113,11 @@ class HasPermissionsQueryHelper {
     /**
      * Builds the query builder query used to test permissions.
      *
-     * @param Entity $entity
+     * @param HasId $entity
      * @param array $namesFiltered
-     * @param $type
      * @return QueryBuilder
      */
-    protected function buildHasPermissionToQuery(Entity $entity, array $namesFiltered, $type): QueryBuilder
+    protected function buildHasPermissionToQueryBase(HasId $entity, array $namesFiltered): QueryBuilder
     {
         // We use a query to check if the user has the permissions that are passed rather than using the getRoles and getPermissions methods used previously.
         // This method will be much faster when there are many permissions assigned to the user/role.
@@ -130,14 +130,35 @@ class HasPermissionsQueryHelper {
                 $qb->expr()->eq('e.id', $entity->getId())
             )
             ->andWhere($qb->expr()->in('p.name', $namesFiltered));
-        if ($type===$this->getPermissionRelationsName()) {
-            $qb->innerJoin('e.' . $this->getPermissionRelationsName(), 'p');
-        } else if ($type===$this->getRoleRelationsName()) {
-            $qb->addSelect('partial r.{id}');
-            $qb->innerJoin('e.' . $this->getRoleRelationsName(), 'r');
-            $qb->innerJoin('r.' . $this->getPermissionRelationsName(), 'p');
-        }
 
+        return $qb;
+    }
+
+    /**
+     * Builds on the base query to check the permissions table
+     * @param HasId $entity
+     * @param array $namesFiltered
+     * @return QueryBuilder
+     */
+    protected function buildHasPermissionToQueryPermissions(HasId $entity, array $namesFiltered): QueryBuilder
+    {
+        $qb = $this->buildHasPermissionToQueryBase( $entity, $namesFiltered);
+        $qb->innerJoin('e.' . $this->getPermissionRelationsName(), 'p');
+        return $qb;
+    }
+
+    /**
+     * Builds on the base query to check the roles table and then permissions
+     * @param HasId $entity
+     * @param array $namesFiltered
+     * @return QueryBuilder
+     */
+    protected function buildHasPermissionToQueryRoles(HasId $entity, array $namesFiltered): QueryBuilder
+    {
+        $qb = $this->buildHasPermissionToQueryBase( $entity, $namesFiltered);
+        $qb->addSelect('partial r.{id}');
+        $qb->innerJoin('e.' . $this->getRoleRelationsName(), 'r');
+        $qb->innerJoin('r.' . $this->getPermissionRelationsName(), 'p');
         return $qb;
     }
 
@@ -160,14 +181,10 @@ class HasPermissionsQueryHelper {
     /**
      * Checks that the trait is compatible the class it is applied too
      *
-     * @param Entity $entity
+     * @param Entity|HasId $entity
      * @throws \RuntimeException
      */
-    protected function checkCompatibility(Entity $entity) {
-        // If you can't get the id from the entity then this trait is not compatible with the class
-        if (!method_exists ($entity, 'getId')) {
-            throw new RuntimeException($this->getErrorFromConstant('needsGetIdError')['message']);
-        }
+    protected function checkCompatibility(HasId $entity) {
 
         if (!$entity instanceof HasPermissionsContract && !$entity instanceof HasRolesHasRoles) {
             throw new RuntimeException($this->getErrorFromConstant('needsPermissionContract')['message']);
