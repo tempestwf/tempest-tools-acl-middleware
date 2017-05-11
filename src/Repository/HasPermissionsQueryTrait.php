@@ -17,7 +17,7 @@ trait HasPermissionsQueryTrait
      * @return bool
      * @throws \RuntimeException
      */
-    public function hasPermissionTo(HasId $entity, $names, $requireAll = false) : bool
+    public function hasPermissionTo(HasId $entity, array $names, bool $requireAll = false) : bool
     {
        $hasPermissionsQueryHelp = new HasPermissionsQueryHelper($this);
        return $hasPermissionsQueryHelp->hasPermissionTo($entity, $names, $requireAll);

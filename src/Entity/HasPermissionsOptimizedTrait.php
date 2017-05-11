@@ -24,7 +24,7 @@ trait HasPermissionsOptimizedTrait
     public function hasPermissionTo($names, $requireAll = false) : bool
     {
         if (!$this instanceof Entity) {
-            throw new \RuntimeException($this->getHasPermissionsOptimizedTriatMustBeAppliedToEntity());
+            throw new \RuntimeException(_($this->getHasPermissionsOptimizedTriatMustBeAppliedToEntity()));
         }
         /** @var EntityManager $em */
         $em = $this->em();
@@ -39,7 +39,7 @@ trait HasPermissionsOptimizedTrait
      * @param bool $requireAll
      * @return bool
      */
-    protected function hasPermissionToFromRepo(RepoHasPermissions $repo, $names, $requireAll = false) : bool
+    protected function hasPermissionToFromRepo(RepoHasPermissions $repo, array $names, bool $requireAll = false) : bool
     {
         return $repo->hasPermissionTo($this, $names, $requireAll);
     }
