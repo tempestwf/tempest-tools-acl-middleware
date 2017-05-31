@@ -40,7 +40,7 @@ class Acl
         $user = $controller->getUser();
 
         if ($user === NULL) {
-            return response (static::ERRORS['notLoggedIn']['message'], static::ERRORS['notLoggedIn']['code']);
+            return response (_(static::ERRORS['notLoggedIn']['message']), static::ERRORS['notLoggedIn']['code']);
         }
 
         $actions = $request->route()->getAction();
