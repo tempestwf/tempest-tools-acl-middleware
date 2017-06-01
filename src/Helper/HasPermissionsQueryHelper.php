@@ -187,11 +187,11 @@ class HasPermissionsQueryHelper {
     protected function checkCompatibility(HasId $entity) {
 
         if (!$entity instanceof HasPermissionsContract && !$entity instanceof HasRolesHasRoles) {
-            throw new RuntimeException(_($this->getErrorFromConstant('needsPermissionContract')['message']));
+            throw new RuntimeException($this->getErrorFromConstant('needsPermissionContract')['message']);
         }
 
         if (get_class($entity) !== $this->getRepository()->getClassName()) {
-            throw new RuntimeException(_($this->getErrorFromConstant('entityMustMatchRepo')['message']));
+            throw new RuntimeException($this->getErrorFromConstant('entityMustMatchRepo')['message']);
         }
 
     }
