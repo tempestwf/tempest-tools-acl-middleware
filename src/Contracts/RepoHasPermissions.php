@@ -2,18 +2,15 @@
 
 namespace TempestTools\AclMiddleware\Contracts;
 
-use App\Entities\Entity;
-
 interface RepoHasPermissions
 {
     /**
-     * @param Entity $entity
-     * @param $names
+     * @param HasId $entity
+     * @param array $names
      * @param bool $requireAll
      * @return bool
      * @internal param string $permission
-     *
      */
-    public function hasPermissionTo(Entity $entity, $names, $requireAll = false) : bool;
+    public function hasPermissionTo(HasId $entity, array $names, bool $requireAll = false) : bool;
 
 }
