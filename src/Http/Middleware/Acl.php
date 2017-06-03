@@ -7,6 +7,8 @@ use App\API\V1\Repositories\UserRepository;
 use Closure;
 use Illuminate\Http\Request;
 use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
+use TempestTools\Common\Helper\ArrayHelper;
+use TempestTools\Common\Laravel\Utility\Extractor;
 
 class Acl
 {
@@ -18,9 +20,13 @@ class Acl
     const ERRORS = [
         'notLoggedIn'=>
             [
-                'message'=>'Error: User not logged in',
-                'code'=> 401
-            ]
+                'message'=>'Error: User not logged in.',
+                'code'=> 401,
+            ],
+        'permissionsFailed'=>[
+            'message'=>'Error: You do not have permission to access this route.',
+            'code'=> 403,
+        ]
     ];
 
     /**
@@ -40,18 +46,25 @@ class Acl
         $user = $controller->getUser();
 
         if ($user === NULL) {
-            return response (_(static::ERRORS['notLoggedIn']['message']), static::ERRORS['notLoggedIn']['code']);
+            return response (static::ERRORS['notLoggedIn']['message'], static::ERRORS['notLoggedIn']['code']);
         }
+        $arrayHelper = new ArrayHelper();
+        $laravelExtractor = new Extractor($request);
+        $arrayHelper->extract([$laravelExtractor, $user]);
 
         $actions = $request->route()->getAction();
-        $uri = $request->route()->getUri();
-        $requestMethod = $request->getMethod();
-
-        //$test = $user->hasPermissionTo(['shimy']);
+        $permissions = $actions['permissions'];
+        $permissionsProcessed = [];
+        /** @var array $permissions */
+        foreach ($permissions as $permission) {
+            $permissionsProcessed[] = $arrayHelper->parse($permission);
+        }
         /** @var UserRepository $repo */
         $repo = $em->getRepository(get_class($user));
-        $result1 = $repo->hasPermissionTo($user, ['auth/me:GET', 'auth/authenticate:POST', 'shimy'], false);
-        //$result2 = $user->hasPermissionTo(['auth/me:GET']);
+        $result = $repo->hasPermissionTo($user, $permissionsProcessed, false);
+        if ($result === false) {
+            return response (static::ERRORS['permissionsFailed']['message'], static::ERRORS['permissionsFailed']['code']);
+        }
 
         return $next($request);
     }
