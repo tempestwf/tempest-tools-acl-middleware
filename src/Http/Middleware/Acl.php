@@ -2,8 +2,8 @@
 
 namespace TempestTools\AclMiddleware\Http\Middleware;
 
-use App\API\V3\Entities\User;
-use App\API\V3\Repositories\UserRepository;
+use App\API\V1\Entities\User;
+use App\API\V1\Repositories\UserRepository;
 use Closure;
 use Illuminate\Http\Request;
 use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
