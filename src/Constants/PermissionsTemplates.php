@@ -8,11 +8,13 @@
 
 namespace TempestTools\AclMiddleware\Constants;
 
+use TempestTools\Common\Laravel\Utility\Extractor;
+
 class PermissionsTemplates{
-    const URI = '?{{:frameworkExtracted:route:uri}}';
-    const URI_AND_REQUEST_METHOD = '?{{:frameworkExtracted:route:uri}}:{{:frameworkExtracted:request:method}}';
-    const ACTION_NAME = '?{{:frameworkExtracted:route:actionName}}';
-    const ACTION_NAME_AND_REQUEST_METHOD = '?{{:frameworkExtracted:route:actionName}}:{{:frameworkExtracted:request:method}}';
-    const DOMAIN = '?{{:frameworkExtracted:route:domain}}';
-    const ENVIRONMENT = '?{{:frameworkExtracted:environment}}';
+    const URI = '?{{:' . Extractor::EXTRACTOR_KEY_NAME . ':route:uri}}';
+    const URI_AND_REQUEST_METHOD = '?{{:' . Extractor::EXTRACTOR_KEY_NAME . ':route:uri}}:{{:' . Extractor::EXTRACTOR_KEY_NAME . ':request:method}}';
+    const ACTION_NAME = '?{{:' . Extractor::EXTRACTOR_KEY_NAME . ':route:actionName}}';
+    const ACTION_NAME_AND_REQUEST_METHOD = '?{{:' . Extractor::EXTRACTOR_KEY_NAME . ':route:actionName}}:{{:' . Extractor::EXTRACTOR_KEY_NAME . ':request:method}}';
+    const DOMAIN = '?{{:' . Extractor::EXTRACTOR_KEY_NAME . ':route:domain}}';
+    const ENVIRONMENT = '?{{:' . Extractor::EXTRACTOR_KEY_NAME . ':environment}}';
 }
