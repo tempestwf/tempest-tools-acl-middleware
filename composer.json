@@ -2,13 +2,18 @@
     "name": "tempest-tools/acl-middleware",
     "description": "Middle ware associated with Laravel Doctrine ACL. This middle ware will check permissions for access to routes, based on the route name and the reqest type.",
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "laravel/framework": "5.3.*",
         "laravel-doctrine/acl": "1.0.*"
     },
     "require-dev": {
     },
     "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "TempestTools\\AclMiddleware\\": "src/"
+        }
+    },
     "authors": [
         {
             "name": "William Tempest Wright Ferrer",
