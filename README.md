@@ -1,1 +1,37 @@
-# tempest-tools-acl-middleware
+# Tempest Tools ACL Middleware
+ 
+This package allows you to easily place templates which draw on stored information about the user's request to laravel in order to check if a resource is allowed to be accessed by the current user.
+ 
+The package uses laravel-doctrine/acl at it’s core, however some of the functionality that was stored in laravel-doctrine/acl has been replaced due to performance concerns in the base package.
+ 
+The base package would retrieve and iterate all permissions available to a user on each request, which if used in an application that has a lot of permissions could be quite a drain on resources. I have replaced this with a simple query.
+ 
+Examples given in the code are based on using the Tempest Tools Skeleton, so the routing examples may not look exactly as you are used to.
+ 
+Please see the wiki for additional documentation.
+ 
+Tempest Tools Acl Middleware can be seen in action in the Tempest Tools Skeleton: https://github.com/tempestwf/tempest-tools-skeleton
+ 
+ 
+ 
+## Requirements
+ 
+* PHP >= 7.1.0
+* laravel/framework = 5.3.*,
+* laravel-doctrine/acl = 1.0.*
+ 
+ 
+* [Composer](https://getcomposer.org/).
+ 
+##Installation
+ 
+After installing with composure make sure to add the middleware to your Kernel.php file:
+\app\Http\Kernel.php
+ 
+  protected $routeMiddleware = [
+    'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+    'can'        => \Illuminate\Foundation\Http\Middleware\Authorize::class,
+    'throttle'   => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    'acl' => \TempestTools\AclMiddleware\Http\Middleware\Acl::class
+  ];
+ 
