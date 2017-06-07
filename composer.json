@@ -5,7 +5,8 @@
     "require": {
         "php": ">=7.1.0",
         "laravel/framework": "5.3.*",
-        "laravel-doctrine/acl": "1.0.*"
+        "laravel-doctrine/acl": "1.0.*",
+        "tempest-tools/common": "1.0.*"
     },
     "require-dev": {
     },
