@@ -27,11 +27,11 @@ Tempest Tools Acl Middleware can be seen in action in the Tempest Tools Skeleton
  
 After installing with composure make sure to add the middleware to your Kernel.php file:
 \app\Http\Kernel.php
- 
+```
   protected $routeMiddleware = [
     'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
     'can'        => \Illuminate\Foundation\Http\Middleware\Authorize::class,
     'throttle'   => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     'acl' => \TempestTools\AclMiddleware\Http\Middleware\Acl::class
   ];
- 
+```
