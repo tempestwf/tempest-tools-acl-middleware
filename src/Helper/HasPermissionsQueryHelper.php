@@ -5,9 +5,9 @@ namespace TempestTools\AclMiddleware\Helper;
 use App\Entities\Entity;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use LaravelDoctrine\ACL\Contracts\HasPermissions as HasPermissionsContract;
-use LaravelDoctrine\ACL\Contracts\HasRoles as HasRolesHasRoles;
-use LaravelDoctrine\ACL\Contracts\Permission as PermissionContract;
+use TempestTools\AclMiddleware\Contracts\HasPermissions as HasPermissionsContract;
+use TempestTools\AclMiddleware\Contracts\HasRoles as HasRolesHasRoles;
+use TempestTools\AclMiddleware\Contracts\Permission as PermissionContract;
 use RuntimeException;
 use TempestTools\AclMiddleware\Contracts\HasId;
 use TempestTools\Common\Utility\ErrorConstantsTrait;
@@ -51,9 +51,9 @@ class HasPermissionsQueryHelper {
     /**
      * HasPermissionsQueryHelper constructor.
      *
-     * @param EntityRepository $repository
+     * @param mixed $repository
      */
-    public function __construct(EntityRepository $repository) {
+    public function __construct($repository) {
         $this->setRepository($repository);
     }
 
