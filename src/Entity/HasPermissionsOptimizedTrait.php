@@ -24,7 +24,7 @@ trait HasPermissionsOptimizedTrait
     public function hasPermissionTo($names, $requireAll = false) : bool
     {
         if (!$this instanceof Entity) {
-            throw new \RuntimeException(_($this->getHasPermissionsOptimizedTriatMustBeAppliedToEntity()));
+            throw new \RuntimeException($this->getHasPermissionsOptimizedTriatMustBeAppliedToEntity());
         }
         /** @var EntityManager $em */
         $em = $this->em();

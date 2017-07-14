@@ -29,7 +29,7 @@ class HasPermissionsQueryHelper {
             ],
         'entityMustMatchRepo'=>
             [
-                'message'=>'Error: entity must match the repo it was passed to to use the HasPermissionsQueryHelper'
+                'message'=>'Error: entity must match the repo it was passed to to use the HasPermissionsQueryHelper. Entity class name = %s, expected class name = %s.'
             ]
     ];
 
@@ -191,7 +191,7 @@ class HasPermissionsQueryHelper {
         }
 
         if (get_class($entity) !== $this->getRepository()->getClassName()) {
-            throw new RuntimeException($this->getErrorFromConstant('entityMustMatchRepo')['message']);
+            throw new RuntimeException(sprintf($this->getErrorFromConstant('entityMustMatchRepo')['message'], get_class($entity), $this->getRepository()->getClassName()));
         }
 
     }
