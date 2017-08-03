@@ -61,7 +61,7 @@ class Acl
         }
         /** @var UserRepository $repo */
         $repo = $em->getRepository(get_class($user));
-        $result = $repo->hasPermissionTo($user, $permissionsProcessed, false);
+        $result = $repo->hasPermissionTo($user, $permissionsProcessed);
         if ($result === false) {
             return response (static::ERRORS['permissionsFailed']['message'], static::ERRORS['permissionsFailed']['code']);
         }

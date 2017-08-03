@@ -184,7 +184,8 @@ class HasPermissionsQueryHelper {
      * @param Entity|HasId $entity
      * @throws \RuntimeException
      */
-    protected function checkCompatibility(HasId $entity) {
+    protected function checkCompatibility(HasId $entity): void
+    {
 
         if (!$entity instanceof HasPermissionsContract && !$entity instanceof HasRolesHasRoles) {
             throw new RuntimeException($this->getErrorFromConstant('needsPermissionContract')['message']);

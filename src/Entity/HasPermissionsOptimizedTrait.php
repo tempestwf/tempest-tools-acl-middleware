@@ -11,7 +11,7 @@ use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 trait HasPermissionsOptimizedTrait
 {
     use MakeEmTrait;
-    protected $hasPermissionsOptimizedTriatMustBeAppliedToEntity = 'Error: HasPermissionsOptimizedTriat must be applied to an entity';
+    protected $hasPermissionsOptimizedTraitMustBeAppliedToEntity = 'Error: HasPermissionsOptimizedTrait must be applied to an entity';
     /**
      * A method that checks if the current entity the trait is applied to has permissions that match the names passed
      *
@@ -24,7 +24,7 @@ trait HasPermissionsOptimizedTrait
     public function hasPermissionTo($names, $requireAll = false) : bool
     {
         if (!$this instanceof Entity) {
-            throw new \RuntimeException($this->getHasPermissionsOptimizedTriatMustBeAppliedToEntity());
+            throw new \RuntimeException($this->getHasPermissionsOptimizedTraitMustBeAppliedToEntity());
         }
         /** @var EntityManager $em */
         $em = $this->em();
@@ -47,9 +47,9 @@ trait HasPermissionsOptimizedTrait
     /**
      * @return string
      */
-    public function getHasPermissionsOptimizedTriatMustBeAppliedToEntity(): string
+    public function getHasPermissionsOptimizedTraitMustBeAppliedToEntity(): string
     {
-        return $this->hasPermissionsOptimizedTriatMustBeAppliedToEntity;
+        return $this->hasPermissionsOptimizedTraitMustBeAppliedToEntity;
     }
 
 

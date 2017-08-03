@@ -7,5 +7,5 @@ interface Role extends HasPermissions
     /**
      * @return string
      */
-    public function getName();
+    public function getName():string;
 }

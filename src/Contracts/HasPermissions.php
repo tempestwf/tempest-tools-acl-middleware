@@ -11,7 +11,7 @@ interface HasPermissions
      *
      * @return bool
      */
-    public function hasPermissionTo($permission);
+    public function hasPermissionTo($permission):bool;
 
     /**
      * @return ArrayCollection|Permission[]
