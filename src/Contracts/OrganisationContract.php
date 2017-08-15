@@ -2,7 +2,7 @@
 
 namespace TempestTools\AclMiddleware\Contracts;
 
-interface Permission
+interface OrganisationContract
 {
     /**
      * @return string

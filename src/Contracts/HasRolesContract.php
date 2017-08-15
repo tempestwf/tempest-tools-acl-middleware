@@ -4,10 +4,10 @@ namespace TempestTools\AclMiddleware\Contracts;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-interface HasRoles
+interface HasRolesContract
 {
     /**
-     * @return ArrayCollection|Role[]
+     * @return ArrayCollection|RoleContract[]
      */
     public function getRoles();
 }

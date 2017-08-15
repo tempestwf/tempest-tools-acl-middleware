@@ -2,7 +2,7 @@
 
 namespace TempestTools\AclMiddleware\Contracts;
 
-interface HasId
+interface HasIdContract
 {
     /**
      * @return mixed

@@ -5,11 +5,11 @@ namespace TempestTools\AclMiddleware\Helper;
 use App\Entities\Entity;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use TempestTools\AclMiddleware\Contracts\HasPermissions as HasPermissionsContract;
-use TempestTools\AclMiddleware\Contracts\HasRoles as HasRolesHasRoles;
-use TempestTools\AclMiddleware\Contracts\Permission as PermissionContract;
+use TempestTools\AclMiddleware\Contracts\HasPermissionsContract as HasPermissionsContract;
+use TempestTools\AclMiddleware\Contracts\HasRolesContract as HasRolesHasRoles;
+use TempestTools\AclMiddleware\Contracts\PermissionContract as PermissionContract;
 use RuntimeException;
-use TempestTools\AclMiddleware\Contracts\HasId;
+use TempestTools\AclMiddleware\Contracts\HasIdContract;
 use TempestTools\Common\Utility\ErrorConstantsTrait;
 
 class HasPermissionsQueryHelper {
@@ -61,13 +61,13 @@ class HasPermissionsQueryHelper {
     /**
      * A method that checks if the current entity the trait is applied to has permissions that match the names passed
      *
-     * @param HasId $entity
+     * @param HasIdContract $entity
      * @param  array $names
      * @param  bool $requireAll
      * @return bool
      * @throws \RuntimeException
      */
-    public function hasPermissionTo(HasId $entity, array $names, bool $requireAll = false) : bool
+    public function hasPermissionTo(HasIdContract $entity, array $names, bool $requireAll = false) : bool
     {
         $this->checkCompatibility($entity);
 
@@ -113,11 +113,11 @@ class HasPermissionsQueryHelper {
     /**
      * Builds the query builder query used to test permissions.
      *
-     * @param HasId $entity
+     * @param HasIdContract $entity
      * @param array $namesFiltered
      * @return QueryBuilder
      */
-    protected function buildHasPermissionToQueryBase(HasId $entity, array $namesFiltered): QueryBuilder
+    protected function buildHasPermissionToQueryBase(HasIdContract $entity, array $namesFiltered): QueryBuilder
     {
         // We use a query to check if the user has the permissions that are passed rather than using the getRoles and getPermissions methods used previously.
         // This method will be much faster when there are many permissions assigned to the user/role.
@@ -136,11 +136,12 @@ class HasPermissionsQueryHelper {
 
     /**
      * Builds on the base query to check the permissions table
-     * @param HasId $entity
+     *
+     * @param HasIdContract $entity
      * @param array $namesFiltered
      * @return QueryBuilder
      */
-    protected function buildHasPermissionToQueryPermissions(HasId $entity, array $namesFiltered): QueryBuilder
+    protected function buildHasPermissionToQueryPermissions(HasIdContract $entity, array $namesFiltered): QueryBuilder
     {
         $qb = $this->buildHasPermissionToQueryBase( $entity, $namesFiltered);
         $qb->innerJoin('e.' . $this->getPermissionRelationsName(), 'p');
@@ -149,11 +150,12 @@ class HasPermissionsQueryHelper {
 
     /**
      * Builds on the base query to check the roles table and then permissions
-     * @param HasId $entity
+     *
+     * @param HasIdContract $entity
      * @param array $namesFiltered
      * @return QueryBuilder
      */
-    protected function buildHasPermissionToQueryRoles(HasId $entity, array $namesFiltered): QueryBuilder
+    protected function buildHasPermissionToQueryRoles(HasIdContract $entity, array $namesFiltered): QueryBuilder
     {
         $qb = $this->buildHasPermissionToQueryBase( $entity, $namesFiltered);
         $qb->addSelect('partial r.{id}');
@@ -181,10 +183,10 @@ class HasPermissionsQueryHelper {
     /**
      * Checks that the trait is compatible the class it is applied too
      *
-     * @param Entity|HasId $entity
+     * @param Entity|HasIdContract $entity
      * @throws \RuntimeException
      */
-    protected function checkCompatibility(HasId $entity): void
+    protected function checkCompatibility(HasIdContract $entity): void
     {
 
         if (!$entity instanceof HasPermissionsContract && !$entity instanceof HasRolesHasRoles) {

@@ -2,7 +2,7 @@
 
 namespace TempestTools\AclMiddleware\Contracts;
 
-interface Role extends HasPermissions
+interface RoleContract extends HasPermissionsContract
 {
     /**
      * @return string

@@ -4,7 +4,7 @@ namespace TempestTools\AclMiddleware\Entity;
 
 use App\Entities\Entity;
 use Doctrine\ORM\EntityManager;
-use TempestTools\AclMiddleware\Contracts\RepoHasPermissions;
+use TempestTools\AclMiddleware\Contracts\RepoHasPermissionsContract;
 use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 
 
@@ -28,19 +28,20 @@ trait HasPermissionsOptimizedTrait
         }
         /** @var EntityManager $em */
         $em = $this->em();
-        /** @var RepoHasPermissions $repo */
+        /** @var RepoHasPermissionsContract $repo */
         $repo = $em->getRepository(get_class($this));
         return $this->hasPermissionToFromRepo($repo, $names, $requireAll);
     }
 
     /**
-     * @param RepoHasPermissions $repo
+     * @param RepoHasPermissionsContract $repo
      * @param $names
      * @param bool $requireAll
      * @return bool
      */
-    protected function hasPermissionToFromRepo(RepoHasPermissions $repo, array $names, bool $requireAll = false) : bool
+    protected function hasPermissionToFromRepo(RepoHasPermissionsContract $repo, array $names, bool $requireAll = false) : bool
     {
+        /** @noinspection PhpParamsInspection */
         return $repo->hasPermissionTo($this, $names, $requireAll);
     }
 

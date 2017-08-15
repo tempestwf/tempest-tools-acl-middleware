@@ -4,7 +4,7 @@ namespace TempestTools\AclMiddleware\Contracts;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-interface HasPermissions
+interface HasPermissionsContract
 {
     /**
      * @param string $permission
@@ -14,7 +14,7 @@ interface HasPermissions
     public function hasPermissionTo($permission):bool;
 
     /**
-     * @return ArrayCollection|Permission[]
+     * @return ArrayCollection|PermissionContract[]
      */
     public function getPermissions();
 }

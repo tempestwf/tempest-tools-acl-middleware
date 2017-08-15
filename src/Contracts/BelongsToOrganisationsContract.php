@@ -4,10 +4,10 @@ namespace TempestTools\AclMiddleware\Contracts;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-interface BelongsToOrganisations
+interface BelongsToOrganisationsContract
 {
     /**
-     * @return ArrayCollection|Organisation[]
+     * @return ArrayCollection|OrganisationContract[]
      */
     public function getOrganisations();
 }
