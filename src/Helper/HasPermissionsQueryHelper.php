@@ -8,31 +8,10 @@ use Doctrine\ORM\QueryBuilder;
 use TempestTools\AclMiddleware\Contracts\HasPermissionsContract;
 use TempestTools\AclMiddleware\Contracts\HasRolesContract as HasRolesHasRoles;
 use TempestTools\AclMiddleware\Contracts\PermissionContract;
-use RuntimeException;
 use TempestTools\AclMiddleware\Contracts\HasIdContract;
-use TempestTools\Common\Utility\ErrorConstantsTrait;
+use TempestTools\AclMiddleware\Exceptions\AclMiddlewareException;
 
 class HasPermissionsQueryHelper {
-    use ErrorConstantsTrait;
-    /**
-     * @var array ERRORS
-     * A constant that stores the errors that can be returned by the class
-     */
-    const ERRORS = [
-        'needsGetIdError'=>
-            [
-                'message'=>'Error: HasPermissionsQueryTrait trait must be used on an entity with a getId method.'
-            ],
-        'needsPermissionContract'=>
-            [
-                'message'=>'Error: entity must implement either: HasPermissionsContract or HasRolesHasRoles to use the HasPermissionsQueryTrait trait'
-            ],
-        'entityMustMatchRepo'=>
-            [
-                'message'=>'Error: entity must match the repo it was passed to to use the HasPermissionsQueryHelper. Entity class name = %s, expected class name = %s.'
-            ]
-    ];
-
 
     /**
      * @var string
@@ -190,11 +169,11 @@ class HasPermissionsQueryHelper {
     {
 
         if (!$entity instanceof HasPermissionsContract && !$entity instanceof HasRolesHasRoles) {
-            throw new RuntimeException($this->getErrorFromConstant('needsPermissionContract')['message']);
+            throw AclMiddlewareException::needsPermissionContract();
         }
 
         if (get_class($entity) !== $this->getRepository()->getClassName()) {
-            throw new RuntimeException(sprintf($this->getErrorFromConstant('entityMustMatchRepo')['message'], get_class($entity), $this->getRepository()->getClassName()));
+            throw AclMiddlewareException::entityMustMatchRepo(get_class($entity), $this->getRepository()->getClassName());
         }
 
     }
