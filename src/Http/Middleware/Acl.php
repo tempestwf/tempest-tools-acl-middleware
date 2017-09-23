@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 use TempestTools\Common\Helper\ArrayHelper;
+use TempestTools\Common\Laravel\Controller\BaseControllerAbstract;
 use TempestTools\Common\Laravel\Utility\Extractor;
 
 class Acl
@@ -62,6 +63,10 @@ class Acl
         /** @var UserRepository $repo */
         $repo = $em->getRepository(get_class($user));
         $result = $repo->hasPermissionTo($user, $permissionsProcessed);
+
+        if ($controller instanceof BaseControllerAbstract) {
+            $controller->setArrayHelper($arrayHelper);
+        }
         if ($result === false) {
             return response (static::ERRORS['permissionsFailed']['message'], static::ERRORS['permissionsFailed']['code']);
         }
