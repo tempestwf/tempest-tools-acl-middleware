@@ -6,9 +6,9 @@ use App\API\V1\Entities\User;
 use App\API\V1\Repositories\UserRepository;
 use Closure;
 use Illuminate\Http\Request;
+use TempestTools\Common\Contracts\HasArrayHelperContract;
 use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 use TempestTools\Common\Helper\ArrayHelper;
-use TempestTools\Common\Laravel\Controller\BaseControllerAbstract;
 use TempestTools\Common\Laravel\Utility\Extractor;
 
 class Acl
@@ -64,7 +64,7 @@ class Acl
         $repo = $em->getRepository(get_class($user));
         $result = $repo->hasPermissionTo($user, $permissionsProcessed);
 
-        if ($controller instanceof BaseControllerAbstract) {
+        if ($controller instanceof HasArrayHelperContract) {
             $controller->setArrayHelper($arrayHelper);
         }
         if ($result === false) {
