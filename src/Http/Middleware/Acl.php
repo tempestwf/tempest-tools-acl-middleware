@@ -19,11 +19,10 @@ class Acl
      * A constant that stores the errors that can be returned by the class
      */
     const ERRORS = [
-        'notLoggedIn'=>
-            [
-                'message'=>'Error: User not logged in.',
-                'code'=> 401,
-            ],
+        'notLoggedIn'=> [
+            'message'=>'Error: User not logged in.',
+            'code'=> 401,
+        ],
         'permissionsFailed'=>[
             'message'=>'Error: You do not have permission to access this route.',
             'code'=> 403,
