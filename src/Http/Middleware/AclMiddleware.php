@@ -13,7 +13,7 @@ use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 use TempestTools\Common\Exceptions\Laravel\Http\Middleware\CommonMiddlewareException;
 use TempestTools\Common\Helper\ArrayHelper;
 
-class Acl
+class AclMiddleware
 {
     use MakeEmTrait;
     /**
@@ -44,11 +44,11 @@ class Acl
         $controller = $request->route()->getController();
 
         if ($controller instanceof HasArrayHelperContract === false) {
-            throw CommonMiddlewareException::controllerDoesNotImplementHasArrayHelperContract();
+            throw CommonMiddlewareException::controllerDoesNotImplement('HasArrayHelperContract');
         }
 
         if ($controller instanceof HasUserContract === false) {
-            throw CommonMiddlewareException::controllerDoesNotImplementHasUserContract();
+            throw CommonMiddlewareException::controllerDoesNotImplement('HasUserContract');
         }
 
         /** @var HasIdContract $user */
@@ -59,9 +59,8 @@ class Acl
         }
         $arrayHelper = $controller->getArrayHelper() ?? new ArrayHelper();
 
-        if ($controller instanceof HasArrayHelperContract) {
-            $controller->setArrayHelper($arrayHelper);
-        }
+
+        $controller->setArrayHelper($arrayHelper);
 
         $extra = ['self'=>$this, 'controller'=>$controller, 'arrayHelper'=>$arrayHelper];
 
@@ -88,7 +87,7 @@ class Acl
     {
         $em = $this->em();
         $actions = $request->route()->getAction();
-        $permissions = $actions['permissions'];
+        $permissions = $actions['permissions'] ?? [];
         $permissionsProcessed = [];
         /** @var array $permissions */
         foreach ($permissions as $permission) {
