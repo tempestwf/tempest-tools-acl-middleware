@@ -59,13 +59,12 @@ class AclMiddleware
         }
         $arrayHelper = $controller->getArrayHelper() ?? new ArrayHelper();
 
-
         $controller->setArrayHelper($arrayHelper);
 
         $extra = ['self'=>$this, 'controller'=>$controller, 'arrayHelper'=>$arrayHelper];
 
         $result = $this->checkDBPermissions($request, $arrayHelper, $user, $extra);
-        $result = $result === true?$result:$this->checkPermissionClosures($request, $arrayHelper, $extra);
+        $result = $result === true?$this->checkPermissionClosures($request, $arrayHelper, $extra):$result;
         if ($result === false) {
             return response (static::ERRORS['permissionsFailed']['message'], static::ERRORS['permissionsFailed']['code']);
         }
