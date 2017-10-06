@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use TempestTools\AclMiddleware\Contracts\HasIdContract;
 use TempestTools\AclMiddleware\Contracts\RepoHasPermissionsContract;
+use TempestTools\Common\ArrayObject\DefaultTTArrayObject;
 use TempestTools\Common\Contracts\ArrayHelperContract;
 use TempestTools\Common\Contracts\HasArrayHelperContract;
 use TempestTools\Common\Contracts\HasUserContract;
@@ -57,7 +58,7 @@ class AclMiddleware
         if ($user === NULL) {
             return response (static::ERRORS['notLoggedIn']['message'], static::ERRORS['notLoggedIn']['code']);
         }
-        $arrayHelper = $controller->getArrayHelper() ?? new ArrayHelper();
+        $arrayHelper = $controller->getArrayHelper() ?? new ArrayHelper(new DefaultTTArrayObject());
 
         $controller->setArrayHelper($arrayHelper);
 
