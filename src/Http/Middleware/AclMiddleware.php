@@ -64,8 +64,9 @@ class AclMiddleware
 
         $extra = ['self'=>$this, 'controller'=>$controller, 'arrayHelper'=>$arrayHelper];
 
-        $result = $this->checkDBPermissions($request, $arrayHelper, $user, $extra);
-        $result = $result === true?$this->checkPermissionClosures($request, $arrayHelper, $extra):$result;
+        $result = $this->checkPermissionClosures($request, $arrayHelper, $extra);
+        $result = $result === true?$this->checkDBPermissions($request, $arrayHelper, $user, $extra):$result;
+
         if ($result === false) {
             return response (static::ERRORS['permissionsFailed']['message'], static::ERRORS['permissionsFailed']['code']);
         }
@@ -88,6 +89,9 @@ class AclMiddleware
         $em = $this->em();
         $actions = $request->route()->getAction();
         $permissions = $actions['permissions'] ?? [];
+        if ($permissions === []) {
+            return true;
+        }
         $permissionsProcessed = [];
         /** @var array $permissions */
         foreach ($permissions as $permission) {
@@ -105,19 +109,18 @@ class AclMiddleware
      * @param ArrayHelperContract $arrayHelper
      * @param array $extra
      * @return bool
+     * @throws \RuntimeException
      * @internal param HasArrayHelperContract $controller
      */
     protected function checkPermissionClosures (Request $request, ArrayHelperContract $arrayHelper, array $extra):bool
     {
         $actions = $request->route()->getAction();
-        if (isset($actions['permissionClosures']) === true && is_array($actions['permissionClosures']) === true ) {
-            /** @var array $permissionClosures */
-            $permissionClosures = $actions['permissionClosures'];
-            foreach($permissionClosures as $closure) {
-                $result = $arrayHelper->parseClosure($closure, $extra);
-                if ($result === false) {
-                    return false;
-                }
+        /** @var array $permissionClosures */
+        $permissionClosures = $actions['permissionClosures'] ?? [];
+        foreach($permissionClosures as $closure) {
+            $result = $arrayHelper->parse($closure, $extra);
+            if ($result === false) {
+                return false;
             }
         }
         return true;
