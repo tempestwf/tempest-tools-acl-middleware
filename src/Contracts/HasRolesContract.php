@@ -4,6 +4,10 @@ namespace TempestTools\AclMiddleware\Contracts;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+/**
+ * @link    https://github.com/tempestwf
+ * @author  William Tempest Wright Ferrer <https://github.com/tempestwf>
+ */
 interface HasRolesContract
 {
     /**

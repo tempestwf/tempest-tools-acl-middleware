@@ -8,7 +8,12 @@ use TempestTools\AclMiddleware\Contracts\RepoHasPermissionsContract;
 use TempestTools\AclMiddleware\Exceptions\AclMiddlewareException;
 use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 
-
+/**
+ * A trait that can be applied to an Entity to check the DB to see if the roles and permissions table contents allow certain actions to be performed
+ *
+ * @link    https://github.com/tempestwf
+ * @author  William Tempest Wright Ferrer <https://github.com/tempestwf>
+ */
 trait HasPermissionsOptimizedTrait
 {
     use MakeEmTrait;
@@ -35,6 +40,7 @@ trait HasPermissionsOptimizedTrait
     }
 
     /**
+     * Checks the DB to see if the Entity has permission to take the given action
      * @param RepoHasPermissionsContract $repo
      * @param $names
      * @param bool $requireAll

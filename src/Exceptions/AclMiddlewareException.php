@@ -9,6 +9,12 @@
 namespace TempestTools\AclMiddleware\Exceptions;
 
 
+/**
+ * Exception for ACL middleware
+ *
+ * @link    https://github.com/tempestwf
+ * @author  William Tempest Wright Ferrer <https://github.com/tempestwf>
+ */
 class AclMiddlewareException extends \RunTimeException
 {
     /**

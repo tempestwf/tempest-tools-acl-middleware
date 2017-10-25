@@ -6,6 +6,12 @@ use TempestTools\AclMiddleware\Contracts\HasIdContract;
 use TempestTools\AclMiddleware\Helper\HasPermissionsQueryHelper;
 
 
+/**
+ * Trait that allows you to check for permissions on an entity through the repo instead of just on the Entity
+ *
+ * @link    https://github.com/tempestwf
+ * @author  William Tempest Wright Ferrer <https://github.com/tempestwf>
+ */
 trait HasPermissionsQueryTrait
 {
     /**

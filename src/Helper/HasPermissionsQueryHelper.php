@@ -11,6 +11,12 @@ use TempestTools\AclMiddleware\Contracts\PermissionContract;
 use TempestTools\AclMiddleware\Contracts\HasIdContract;
 use TempestTools\AclMiddleware\Exceptions\AclMiddlewareException;
 
+/**
+ * A class used to query the database to check for the ACL permissions that are assigned to specific entities.
+ *
+ * @link    https://github.com/tempestwf
+ * @author  William Tempest Wright Ferrer <https://github.com/tempestwf>
+ */
 class HasPermissionsQueryHelper {
 
     /**
@@ -22,6 +28,7 @@ class HasPermissionsQueryHelper {
      * @var string
      */
     protected $permissionRelationsName = 'permissions';
+
     /**
      * @var EntityRepository
      */

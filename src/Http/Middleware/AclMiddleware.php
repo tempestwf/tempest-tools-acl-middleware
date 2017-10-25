@@ -14,6 +14,12 @@ use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 use TempestTools\Common\Exceptions\Laravel\Http\Middleware\CommonMiddlewareException;
 use TempestTools\Common\Helper\ArrayHelper;
 
+/**
+ * Middleware that can be applied to a route to check if the current user has permission to access that route.
+ *
+ * @link    https://github.com/tempestwf
+ * @author  William Tempest Wright Ferrer <https://github.com/tempestwf>
+ */
 class AclMiddleware
 {
     use MakeEmTrait;
@@ -77,6 +83,7 @@ class AclMiddleware
     /** @noinspection MoreThanThreeArgumentsInspection */
 
     /**
+     * Checks the permissions in the DB
      * @param Request $request
      * @param ArrayHelperContract $arrayHelper
      * @param HasIdContract $user
@@ -105,6 +112,7 @@ class AclMiddleware
     /** @noinspection MoreThanThreeArgumentsInspection */
 
     /**
+     * Checks permissions by running through closures applied to the route to make sure they all evaluate true.
      * @param Request $request
      * @param ArrayHelperContract $arrayHelper
      * @param array $extra
