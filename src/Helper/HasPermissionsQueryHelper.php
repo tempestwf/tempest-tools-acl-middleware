@@ -151,7 +151,7 @@ class HasPermissionsQueryHelper {
     }
 
     /**
-     * Make sure the names array is a array, and if it contains Permission objects then we get the names from them.
+     * Makes sure the names array is a array, and if it contains Permission objects then we get the names from them.
      * @param $names
      * @return array
      */
