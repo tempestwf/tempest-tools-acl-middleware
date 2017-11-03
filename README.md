@@ -1,4 +1,4 @@
-# Tempest Tools ACL Middleware
+# Tempest Tools Moat
  
 This package allows you to easily place templates which draw on stored information about the user's request to laravel in order to check if a resource is allowed to be accessed by the current user.
  
@@ -10,7 +10,7 @@ Examples given in the code are based on using the Tempest Tools Skeleton, so the
  
 Please see the wiki for additional documentation.
  
-Tempest Tools Acl Middleware can be seen in action in the Tempest Tools Skeleton: https://github.com/tempestwf/tempest-tools-skeleton
+Tempest Tools Moat can be seen in action in the Tempest Tools Skeleton: https://github.com/tempestwf/tempest-tools-skeleton
  
  
  
@@ -18,7 +18,6 @@ Tempest Tools Acl Middleware can be seen in action in the Tempest Tools Skeleton
  
 * PHP >= 7.1.0
 * laravel/framework = 5.3.*,
-* laravel-doctrine/acl = 1.0.*
  
  
 * [Composer](https://getcomposer.org/).
