@@ -1,55 +1,55 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Entity;
+namespace TempestTools\Moat\Entity;
 
 use App\Entities\Entity;
 use Doctrine\ORM\EntityManager;
-use TempestTools\AclMiddleware\Contracts\RepoHasPermissions;
+use TempestTools\Moat\Contracts\RepoHasPermissionsContract;
+use TempestTools\Moat\Exceptions\AclMiddlewareException;
 use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 
-
+/**
+ * A trait that can be applied to an Entity to check the DB to see if the roles and permissions table contents allow certain actions to be performed
+ *
+ * @link    https://github.com/tempestwf
+ * @author  William Tempest Wright Ferrer <https://github.com/tempestwf>
+ */
 trait HasPermissionsOptimizedTrait
 {
     use MakeEmTrait;
-    protected $hasPermissionsOptimizedTriatMustBeAppliedToEntity = 'Error: HasPermissionsOptimizedTriat must be applied to an entity';
+
     /**
      * A method that checks if the current entity the trait is applied to has permissions that match the names passed
      *
      * @param  array $names
      * @param  bool $requireAll
      * @return bool
-     * @throws \RuntimeException
+     * @throws \TempestTools\Moat\Exceptions\AclMiddlewareException
      * @internal param Entity $entity
      */
     public function hasPermissionTo($names, $requireAll = false) : bool
     {
         if (!$this instanceof Entity) {
-            throw new \RuntimeException(_($this->getHasPermissionsOptimizedTriatMustBeAppliedToEntity()));
+            throw AclMiddlewareException::hasPermissionsOptimizedTraitMustBeAppliedToEntity();
         }
         /** @var EntityManager $em */
         $em = $this->em();
-        /** @var RepoHasPermissions $repo */
+        /** @var RepoHasPermissionsContract $repo */
         $repo = $em->getRepository(get_class($this));
         return $this->hasPermissionToFromRepo($repo, $names, $requireAll);
     }
 
     /**
-     * @param RepoHasPermissions $repo
+     * Checks the DB to see if the Entity has permission to take the given action
+     * @param RepoHasPermissionsContract $repo
      * @param $names
      * @param bool $requireAll
      * @return bool
      */
-    protected function hasPermissionToFromRepo(RepoHasPermissions $repo, array $names, bool $requireAll = false) : bool
+    protected function hasPermissionToFromRepo(RepoHasPermissionsContract $repo, array $names, bool $requireAll = false) : bool
     {
+        /** @noinspection PhpParamsInspection */
         return $repo->hasPermissionTo($this, $names, $requireAll);
-    }
-
-    /**
-     * @return string
-     */
-    public function getHasPermissionsOptimizedTriatMustBeAppliedToEntity(): string
-    {
-        return $this->hasPermissionsOptimizedTriatMustBeAppliedToEntity;
     }
 
 

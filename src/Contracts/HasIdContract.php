@@ -1,8 +1,12 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Contracts;
+namespace TempestTools\Moat\Contracts;
 
-interface HasId
+/**
+ * @link    https://github.com/tempestwf
+ * @author  William Tempest Wright Ferrer <https://github.com/tempestwf>
+ */
+interface HasIdContract
 {
     /**
      * @return mixed

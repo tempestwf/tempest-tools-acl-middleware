@@ -1,38 +1,23 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Helper;
+namespace TempestTools\Moat\Helper;
 
 use App\Entities\Entity;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use LaravelDoctrine\ACL\Contracts\HasPermissions as HasPermissionsContract;
-use LaravelDoctrine\ACL\Contracts\HasRoles as HasRolesHasRoles;
-use LaravelDoctrine\ACL\Contracts\Permission as PermissionContract;
-use RuntimeException;
-use TempestTools\AclMiddleware\Contracts\HasId;
-use TempestTools\Common\Utility\ErrorConstantsTrait;
+use TempestTools\Moat\Contracts\HasPermissionsContract;
+use TempestTools\Moat\Contracts\HasRolesContract as HasRolesHasRoles;
+use TempestTools\Moat\Contracts\PermissionContract;
+use TempestTools\Moat\Contracts\HasIdContract;
+use TempestTools\Moat\Exceptions\AclMiddlewareException;
 
+/**
+ * A class used to query the database to check for the ACL permissions that are assigned to specific entities.
+ *
+ * @link    https://github.com/tempestwf
+ * @author  William Tempest Wright Ferrer <https://github.com/tempestwf>
+ */
 class HasPermissionsQueryHelper {
-    use ErrorConstantsTrait;
-    /**
-     * @var array ERRORS
-     * A constant that stores the errors that can be returned by the class
-     */
-    const ERRORS = [
-        'needsGetIdError'=>
-            [
-                'message'=>'Error: HasPermissionsQueryTrait trait must be used on an entity with a getId method.'
-            ],
-        'needsPermissionContract'=>
-            [
-                'message'=>'Error: entity must implement either: HasPermissionsContract or HasRolesHasRoles to use the HasPermissionsQueryTrait trait'
-            ],
-        'entityMustMatchRepo'=>
-            [
-                'message'=>'Error: entity must match the repo it was passed to to use the HasPermissionsQueryHelper'
-            ]
-    ];
-
 
     /**
      * @var string
@@ -43,6 +28,7 @@ class HasPermissionsQueryHelper {
      * @var string
      */
     protected $permissionRelationsName = 'permissions';
+
     /**
      * @var EntityRepository
      */
@@ -51,9 +37,9 @@ class HasPermissionsQueryHelper {
     /**
      * HasPermissionsQueryHelper constructor.
      *
-     * @param EntityRepository $repository
+     * @param mixed $repository
      */
-    public function __construct(EntityRepository $repository) {
+    public function __construct($repository) {
         $this->setRepository($repository);
     }
 
@@ -61,13 +47,13 @@ class HasPermissionsQueryHelper {
     /**
      * A method that checks if the current entity the trait is applied to has permissions that match the names passed
      *
-     * @param HasId $entity
+     * @param HasIdContract $entity
      * @param  array $names
      * @param  bool $requireAll
      * @return bool
      * @throws \RuntimeException
      */
-    public function hasPermissionTo(HasId $entity, array $names, bool $requireAll = false) : bool
+    public function hasPermissionTo(HasIdContract $entity, array $names, bool $requireAll = false) : bool
     {
         $this->checkCompatibility($entity);
 
@@ -113,11 +99,11 @@ class HasPermissionsQueryHelper {
     /**
      * Builds the query builder query used to test permissions.
      *
-     * @param HasId $entity
+     * @param HasIdContract $entity
      * @param array $namesFiltered
      * @return QueryBuilder
      */
-    protected function buildHasPermissionToQueryBase(HasId $entity, array $namesFiltered): QueryBuilder
+    protected function buildHasPermissionToQueryBase(HasIdContract $entity, array $namesFiltered): QueryBuilder
     {
         // We use a query to check if the user has the permissions that are passed rather than using the getRoles and getPermissions methods used previously.
         // This method will be much faster when there are many permissions assigned to the user/role.
@@ -136,11 +122,12 @@ class HasPermissionsQueryHelper {
 
     /**
      * Builds on the base query to check the permissions table
-     * @param HasId $entity
+     *
+     * @param HasIdContract $entity
      * @param array $namesFiltered
      * @return QueryBuilder
      */
-    protected function buildHasPermissionToQueryPermissions(HasId $entity, array $namesFiltered): QueryBuilder
+    protected function buildHasPermissionToQueryPermissions(HasIdContract $entity, array $namesFiltered): QueryBuilder
     {
         $qb = $this->buildHasPermissionToQueryBase( $entity, $namesFiltered);
         $qb->innerJoin('e.' . $this->getPermissionRelationsName(), 'p');
@@ -149,11 +136,12 @@ class HasPermissionsQueryHelper {
 
     /**
      * Builds on the base query to check the roles table and then permissions
-     * @param HasId $entity
+     *
+     * @param HasIdContract $entity
      * @param array $namesFiltered
      * @return QueryBuilder
      */
-    protected function buildHasPermissionToQueryRoles(HasId $entity, array $namesFiltered): QueryBuilder
+    protected function buildHasPermissionToQueryRoles(HasIdContract $entity, array $namesFiltered): QueryBuilder
     {
         $qb = $this->buildHasPermissionToQueryBase( $entity, $namesFiltered);
         $qb->addSelect('partial r.{id}');
@@ -163,7 +151,7 @@ class HasPermissionsQueryHelper {
     }
 
     /**
-     * Make sure the names array is a array, and if it contains Permission objects then we get the names from them.
+     * Makes sure the names array is a array, and if it contains Permission objects then we get the names from them.
      * @param $names
      * @return array
      */
@@ -181,17 +169,18 @@ class HasPermissionsQueryHelper {
     /**
      * Checks that the trait is compatible the class it is applied too
      *
-     * @param Entity|HasId $entity
+     * @param Entity|HasIdContract $entity
      * @throws \RuntimeException
      */
-    protected function checkCompatibility(HasId $entity) {
+    protected function checkCompatibility(HasIdContract $entity): void
+    {
 
         if (!$entity instanceof HasPermissionsContract && !$entity instanceof HasRolesHasRoles) {
-            throw new RuntimeException($this->getErrorFromConstant('needsPermissionContract')['message']);
+            throw AclMiddlewareException::needsPermissionContract();
         }
 
         if (get_class($entity) !== $this->getRepository()->getClassName()) {
-            throw new RuntimeException($this->getErrorFromConstant('entityMustMatchRepo')['message']);
+            throw AclMiddlewareException::entityMustMatchRepo(get_class($entity), $this->getRepository()->getClassName());
         }
 
     }
