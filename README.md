@@ -2,7 +2,7 @@
  
 This package allows you to easily place templates which draw on stored information about the user's request to laravel in order to check if a resource is allowed to be accessed by the current user.
  
-The package uses laravel-doctrine/acl at it’s core, however some of the functionality that was stored in laravel-doctrine/acl has been replaced due to performance concerns in the base package.
+The package used laravel-doctrine/acl at it’s core, however the functionality that was stored in laravel-doctrine/acl has been replaced due to performance concerns in the base package and errors that package had with phpunit.
  
 The base package would retrieve and iterate all permissions available to a user on each request, which if used in an application that has a lot of permissions could be quite a drain on resources. I have replaced this with a simple query.
  
@@ -24,7 +24,7 @@ Tempest Tools Moat can be seen in action in the Tempest Tools Skeleton: https://
  
 ##Installation
  
-After installing with composure make sure to add the middleware to your Kernel.php file:
+After installing with composer make sure to add the middleware to your Kernel.php file:
 \app\Http\Kernel.php
 ```
   protected $routeMiddleware = [
