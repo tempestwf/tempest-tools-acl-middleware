@@ -1,15 +1,15 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Helper;
+namespace TempestTools\Moat\Helper;
 
 use App\Entities\Entity;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use TempestTools\AclMiddleware\Contracts\HasPermissionsContract;
-use TempestTools\AclMiddleware\Contracts\HasRolesContract as HasRolesHasRoles;
-use TempestTools\AclMiddleware\Contracts\PermissionContract;
-use TempestTools\AclMiddleware\Contracts\HasIdContract;
-use TempestTools\AclMiddleware\Exceptions\AclMiddlewareException;
+use TempestTools\Moat\Contracts\HasPermissionsContract;
+use TempestTools\Moat\Contracts\HasRolesContract as HasRolesHasRoles;
+use TempestTools\Moat\Contracts\PermissionContract;
+use TempestTools\Moat\Contracts\HasIdContract;
+use TempestTools\Moat\Exceptions\AclMiddlewareException;
 
 /**
  * A class used to query the database to check for the ACL permissions that are assigned to specific entities.

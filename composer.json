@@ -1,5 +1,5 @@
 {
-    "name": "tempest-tools/acl-middleware",
+    "name": "tempest-tools/moat",
     "description": "Middleware associated with Laravel Doctrine ACL. This middleware will check permissions for access to routes, based on the route name and the request type.",
     "keywords": ["doctrine", "orm", "database", "laravel", "acl", "access control layer", "middleware", "tempest tools"],
     "require": {

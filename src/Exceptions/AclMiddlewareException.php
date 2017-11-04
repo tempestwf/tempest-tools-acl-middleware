@@ -6,7 +6,7 @@
  * Time: 6:52 PM
  */
 
-namespace TempestTools\AclMiddleware\Exceptions;
+namespace TempestTools\Moat\Exceptions;
 
 
 /**

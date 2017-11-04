@@ -31,6 +31,6 @@ After installing with composure make sure to add the middleware to your Kernel.p
     'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
     'can'        => \Illuminate\Foundation\Http\Middleware\Authorize::class,
     'throttle'   => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-    'acl' => \TempestTools\AclMiddleware\Http\Middleware\Acl::class
+    'acl' => \TempestTools\Moat\Http\Middleware\Acl::class
   ];
 ```

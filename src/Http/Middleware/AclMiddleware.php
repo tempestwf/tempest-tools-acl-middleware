@@ -1,11 +1,11 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Http\Middleware;
+namespace TempestTools\Moat\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use TempestTools\AclMiddleware\Contracts\HasIdContract;
-use TempestTools\AclMiddleware\Contracts\RepoHasPermissionsContract;
+use TempestTools\Moat\Contracts\HasIdContract;
+use TempestTools\Moat\Contracts\RepoHasPermissionsContract;
 use TempestTools\Common\ArrayObject\DefaultTTArrayObject;
 use TempestTools\Common\Contracts\ArrayHelperContract;
 use TempestTools\Common\Contracts\HasArrayHelperContract;

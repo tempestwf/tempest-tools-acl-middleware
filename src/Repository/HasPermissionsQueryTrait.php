@@ -1,9 +1,9 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Repository;
+namespace TempestTools\Moat\Repository;
 
-use TempestTools\AclMiddleware\Contracts\HasIdContract;
-use TempestTools\AclMiddleware\Helper\HasPermissionsQueryHelper;
+use TempestTools\Moat\Contracts\HasIdContract;
+use TempestTools\Moat\Helper\HasPermissionsQueryHelper;
 
 
 /**

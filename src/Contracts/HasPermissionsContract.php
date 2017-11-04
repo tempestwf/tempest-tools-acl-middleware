@@ -1,6 +1,6 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Contracts;
+namespace TempestTools\Moat\Contracts;
 
 use Doctrine\Common\Collections\ArrayCollection;
 

@@ -6,7 +6,7 @@
  * Time: 5:51 PM
  */
 
-namespace TempestTools\AclMiddleware\Constants;
+namespace TempestTools\Moat\Constants;
 
 use TempestTools\Common\Constants\CommonArrayObjectKeyConstants;
 

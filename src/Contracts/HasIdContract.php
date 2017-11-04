@@ -1,6 +1,6 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Contracts;
+namespace TempestTools\Moat\Contracts;
 
 /**
  * @link    https://github.com/tempestwf

@@ -1,11 +1,11 @@
 <?php
 
-namespace TempestTools\AclMiddleware\Entity;
+namespace TempestTools\Moat\Entity;
 
 use App\Entities\Entity;
 use Doctrine\ORM\EntityManager;
-use TempestTools\AclMiddleware\Contracts\RepoHasPermissionsContract;
-use TempestTools\AclMiddleware\Exceptions\AclMiddlewareException;
+use TempestTools\Moat\Contracts\RepoHasPermissionsContract;
+use TempestTools\Moat\Exceptions\AclMiddlewareException;
 use TempestTools\Common\Doctrine\Utility\MakeEmTrait;
 
 /**
@@ -24,7 +24,7 @@ trait HasPermissionsOptimizedTrait
      * @param  array $names
      * @param  bool $requireAll
      * @return bool
-     * @throws \TempestTools\AclMiddleware\Exceptions\AclMiddlewareException
+     * @throws \TempestTools\Moat\Exceptions\AclMiddlewareException
      * @internal param Entity $entity
      */
     public function hasPermissionTo($names, $requireAll = false) : bool
