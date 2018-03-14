@@ -5,7 +5,7 @@
     "require": {
         "php": ">=7.1.0",
         "laravel/framework": "5.3.*",
-        "tempest-tools/common": "1.0.*",
+        "tempest-tools/common": "2.0.*",
         "laravel-doctrine/orm": "1.2.*"
     },
     "require-dev": {
@@ -13,7 +13,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "TempestTools\\AclMiddleware\\": "src/"
+            "TempestTools\\Moat\\": "src/"
         }
     },
     "authors": [
