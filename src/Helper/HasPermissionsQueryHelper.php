@@ -112,10 +112,9 @@ class HasPermissionsQueryHelper {
                 partial e.{id}, 
                 partial p.{id}
             '])
-            ->where(
-                $qb->expr()->eq('e.id', $entity->getId())
-            )
+            ->where($qb->expr()->eq('e.id', ':entityId'))
             ->andWhere($qb->expr()->in('p.name', $namesFiltered));
+        $qb->setParameters(['entityId' => $entity->getId()]);
 
         return $qb;
     }
